@@ -72,7 +72,7 @@ postMeme.addEventListener('click', function () {
         document.getElementById('errorMessage').appendChild(errorMessage(str));
     }
     else{
-        fetch(hostedUrl+'meme', {
+        fetch(hostedUrl+'memes', {
             method: "POST",
             body: JSON.stringify({
                 name: name.value,
@@ -121,7 +121,7 @@ document.getElementById('editUrl').addEventListener('input',function(){
 function refreshFunction()
 {
     memeContainer.innerHTML = "";
-    fetch(hostedUrl+'meme').then((res) => {
+    fetch(hostedUrl+'memes').then((res) => {
         res.json().then((b)=>{
 
             if(b.length==0)
@@ -141,7 +141,7 @@ function refreshFunction()
 refreshFunction()
 function deleteMeme(str)
 {
-    fetch(hostedUrl+'meme/'+str, {
+    fetch(hostedUrl+'memes/'+str, {
         method: "delete",
         headers: { 
             "Content-type": "application/json; charset=UTF-8"
@@ -157,7 +157,7 @@ function deleteMeme(str)
 
 document.getElementById('editPost').addEventListener('click',function(){
   
-    fetch(hostedUrl+'meme/'+toEditID, {
+    fetch(hostedUrl+'memes/'+toEditID, {
         method: "PATCH",
         body: JSON.stringify({
             reactions:toEditReaction,
@@ -184,7 +184,7 @@ function editMeme(str)
 {
     console.log(str)
     document.getElementById('editModel').style.display  = 'block';
-    fetch(hostedUrl+'meme/'+str).then((res)=>{
+    fetch(hostedUrl+'memes/'+str).then((res)=>{
         res.json().then((element)=>{
             toEditID=str;
             document.getElementById('editName').value = element.name;
@@ -204,7 +204,7 @@ function reaction(str)
     console.log(reactionCount)
     var temp = parseInt(reactionCount.trim());
     temp = temp +1;
-    fetch(hostedUrl+'meme/'+str, {
+    fetch(hostedUrl+'memes/'+str, {
         method: "PATCH",
         body: JSON.stringify({
             reactions:temp
