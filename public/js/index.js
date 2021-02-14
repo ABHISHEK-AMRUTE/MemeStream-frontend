@@ -1,4 +1,7 @@
-const hostedUrl = 'https://memestream-xmeme.herokuapp.com/';
+const welcomeScreen = document.getElementById('welcomScreenId')
+const mainScreen = document.getElementById('mainScreenId');
+
+const hostedUrl = 'http://localhost:3000/';
 const memeUrl = document.getElementById('url');
 const name = document.getElementById('name');
 const caption = document.getElementById('caption')
@@ -8,39 +11,92 @@ const refresh = document.getElementById('refresh');
 var toEditReaction = 0;
 var toEditID;
 
+
+welcomeScreen.style.display = 'none'
+mainScreen.style.display = 'none'
+
 var username = localStorage.getItem('name');
+console.log(username)
 if(!username)
 {
-    username = 'Abhishek Amrute';
+    welcomeScreen.style.display  = 'block'
+
+}else{
+    mainScreen.style.display = 'block'
+    name.value = username;
+    nameProfile.innerHTML = username;
 }
+
+function saveName(){
+      const welcomeScreenNameField = document.getElementById('username')
+      if(welcomeScreenNameField.value=="")
+      {
+          document.getElementById('errorInNameField').innerHTML="Name must not be empty"
+      }else{
+          localStorage.setItem('name',welcomeScreenNameField.value)
+          username = welcomeScreenNameField.value;
+          name.value = username;
+          nameProfile.innerHTML = username;
+          welcomeScreen.style.display = 'none'
+          mainScreen.style.display = 'block'
+      }
+}
+
+
 postMeme.addEventListener('click', function () {
 
+    var str ="<ul>";
 
-    var obj = {
-        name: name.value,
-        caption: caption.value,
-        url: memeUrl.value,
-        reactions : 0
+    if(name.value=="")
+    {
+        str = str+"<li>Name cannot be empty.</li>";
     }
-    console.log(obj)
-    fetch(hostedUrl+'meme', {
-        method: "POST",
-        body: JSON.stringify({
-            name: name.value,
-            caption: caption.value,
-            url: url.value,
-            reactions:0
-        }),
-        headers: { 
-            "Content-type": "application/json; charset=UTF-8"
-        } 
-    }).then((res) => {
-        res.json().then((b)=>{
-            console.log(b)
-            document.getElementById('model').style.display='none'
-            refreshFunction();
+    if(caption.value=="")
+    {
+        str  =  str + "<li>Caption cannot be empty, try some catchy lines.</li>";
+    }
+    if(url.value=="")
+    {
+        str = str + "<li>Url field cannot be empty.</li>";
+    }
+    str = str + "</ul>";
+    // var obj = {
+    //     name: name.value,
+    //     caption: caption.value,
+    //     url: memeUrl.value,
+    //     reactions : 0
+    // }
+    // console.log(obj)
+    if(str!="<ul></ul>")
+    {
+        document.getElementById('errorMessage').appendChild(errorMessage(str));
+    }
+    else{
+        fetch(hostedUrl+'meme', {
+            method: "POST",
+            body: JSON.stringify({
+                name: name.value,
+                caption: caption.value,
+                url: url.value,
+                reactions:0
+            }),
+            headers: { 
+                "Content-type": "application/json; charset=UTF-8"
+            } 
+        }).then((res) => {
+            res.json().then((b)=>{
+                console.log(b)
+                if(b.error)
+                {
+                    document.getElementById('errorMessage').appendChild(errorMessage(b.error));
+                }else{
+                document.getElementById('model').style.display='none'
+                refreshFunction();
+                document.getElementById('errorMessage').innerHTML="";
+             }
+            })
         })
-    })
+    }
 })
 
 
@@ -177,9 +233,15 @@ function loadMyPosts()
     fetch(hostedUrl+'memeByName/'+username).then((res)=>{
         res.json().then((elements)=>{
            
+            if(elements.length==0)
+            { 
+                memeContainer.appendChild(getNoItemCard());
+            }else
+            {
             elements.forEach(element => {
                 memeContainer.appendChild(makeMemeCard(element.name,element.caption,element.url,element.id,element.reactions))  
             });
+            }
         })
     })
     
