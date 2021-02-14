@@ -1,7 +1,7 @@
 const welcomeScreen = document.getElementById('welcomScreenId')
 const mainScreen = document.getElementById('mainScreenId');
 
-const hostedUrl = 'http://localhost:3000/';
+const hostedUrl = 'https://memestream-xmeme.herokuapp.com/';
 const memeUrl = document.getElementById('url');
 const name = document.getElementById('name');
 const caption = document.getElementById('caption')
